@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>부산 AI·DX 지원사업 문의 포털</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
+  <style>
+    :root {
+      --blue: #1e40af;
+      --blue-dark: #17358f;
+      --sky: #0ea5e9;
+      --sky-soft: #e0f2fe;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --panel: #f8fafc;
+      --danger-bg: #fee2e2;
+      --danger: #b91c1c;
+      --shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #fff;
+      color: var(--text);
+      font-family: Pretendard, "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .site-header {
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .wrap {
+      width: min(100%, 1024px);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .header-inner {
+      padding: 30px 0 26px;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .title-bar {
+      width: 6px;
+      height: 36px;
+      border-radius: 999px;
+      background: var(--blue);
+      flex: 0 0 auto;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.2;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .header-description {
+      margin: 12px 0 0 20px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    main {
+      padding: 28px 0 44px;
+    }
+
+    .compose {
+      margin-bottom: 24px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.3;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+
+    .support-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 12px;
+      border: 1px solid #bfdbfe;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: #334155;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    input,
+    select {
+      height: 44px;
+      padding: 0 12px;
+    }
+
+    textarea {
+      min-height: 132px;
+      resize: vertical;
+      padding: 12px;
+      line-height: 1.65;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--sky);
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.17);
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+
+    .primary-button,
+    .secondary-button,
+    .danger-button {
+      min-height: 44px;
+      border-radius: var(--radius);
+      padding: 0 16px;
+      font-weight: 800;
+      transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+      white-space: nowrap;
+    }
+
+    .primary-button {
+      border: 1px solid var(--blue);
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .primary-button:hover {
+      border-color: var(--blue-dark);
+      background: var(--blue-dark);
+    }
+
+    .secondary-button {
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #334155;
+    }
+
+    .secondary-button:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .danger-button {
+      min-height: 36px;
+      border: 1px solid #fecaca;
+      background: #fff;
+      color: var(--danger);
+      padding: 0 12px;
+      font-size: 13px;
+    }
+
+    .danger-button:hover {
+      background: #fef2f2;
+      border-color: #fca5a5;
+    }
+
+    .list-section {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .list-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .count {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .status-message {
+      display: none;
+      margin: 16px 16px 0;
+      padding: 11px 13px;
+      border-radius: var(--radius);
+      font-weight: 750;
+    }
+
+    .status-message.success {
+      display: block;
+      background: var(--sky-soft);
+      color: var(--blue);
+    }
+
+    .status-message.error {
+      display: block;
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .inquiry-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 13px;
+    }
+
+    .card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 9px;
+    }
+
+    .category-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--sky-soft);
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .time {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .card-title {
+      margin: 0 0 7px;
+      color: #111827;
+      font-size: 17px;
+      line-height: 1.42;
+      font-weight: 900;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+
+    .author {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .body-text {
+      margin: 0;
+      color: #374151;
+      line-height: 1.75;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .empty-state {
+      margin: 16px;
+      padding: 42px 16px;
+      border: 1px dashed #cbd5e1;
+      border-radius: var(--radius);
+      background: #f8fafc;
+      color: #94a3b8;
+      text-align: center;
+      font-weight: 750;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 720px) {
+      .wrap {
+        padding: 0 16px;
+      }
+
+      .header-inner {
+        padding: 24px 0 22px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .header-description {
+        margin-left: 20px;
+      }
+
+      .support-badge {
+        display: none;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .list-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .toolbar-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .toolbar-actions .secondary-button,
+      .toolbar-actions .primary-button {
+        flex: 1 1 150px;
+      }
+
+      .card-head {
+        flex-direction: column;
+      }
+
+      .danger-button {
+        align-self: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="header-inner">
+        <div class="title-row">
+          <span class="title-bar" aria-hidden="true"></span>
+          <h1>부산 AI·DX 지원사업 문의 포털</h1>
+        </div>
+        <p class="header-description">지역기업·시민 누구나 부산정보산업진흥원의 지원사업에 문의할 수 있는 창구입니다.</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="compose" aria-labelledby="compose-title">
+      <div class="section-heading">
+        <h2 id="compose-title">문의 작성</h2>
+        <span class="support-badge">AI·DX 지원사업 상담</span>
+      </div>
+
+      <form id="inquiryForm">
+        <div class="form-grid">
+          <div class="field">
+            <label for="category">카테고리</label>
+            <select id="category" name="category">
+              <option>AI·DX 솔루션 도입</option>
+              <option>데이터·클라우드 바우처</option>
+              <option>교육·인재양성 신청</option>
+              <option>스타트업 입주·창업</option>
+              <option>게임·콘텐츠 제작 지원</option>
+              <option>해외진출</option>
+              <option>기타</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="author">이름</label>
+            <input id="author" name="author" type="text" placeholder="작성자 이름" required>
+          </div>
+          <div class="field full">
+            <label for="title">제목</label>
+            <input id="title" name="title" type="text" placeholder="문의 제목을 입력하세요" required>
+          </div>
+          <div class="field full">
+            <label for="body">내용</label>
+            <textarea id="body" name="body" placeholder="지원사업 문의 내용을 작성하세요" required></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="primary-button" type="submit">등록하기</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="list-section" aria-labelledby="list-title">
+      <div class="list-toolbar">
+        <h2 id="list-title">문의 목록</h2>
+        <div class="toolbar-actions">
+          <span class="count" id="countText">총 0건</span>
+          <button class="secondary-button" id="importButton" type="button">엑셀 가져오기</button>
+          <button class="primary-button" id="exportButton" type="button">엑셀 내보내기</button>
+          <input class="sr-only" id="excelInput" type="file" accept=".xlsx,.xls">
+        </div>
+      </div>
+      <div class="status-message" id="statusMessage" role="status" aria-live="polite"></div>
+      <div class="cards" id="cards"></div>
+    </section>
+  </main>
+
+  <script>
+    const CATEGORIES = [
+      "AI·DX 솔루션 도입",
+      "데이터·클라우드 바우처",
+      "교육·인재양성 신청",
+      "스타트업 입주·창업",
+      "게임·콘텐츠 제작 지원",
+      "해외진출",
+      "기타"
+    ];
+
+    const now = Date.now();
+    let nextId = 6;
+    let inquiries = [
+      {
+        id: 1,
+        category: "AI·DX 솔루션 도입",
+        title: "AI 솔루션 실증 비용 지원 가능한가요?",
+        author: "김민준",
+        body: "제조 현장에 영상 분석 AI 솔루션을 시범 적용하려고 합니다. 실증 비용이나 컨설팅을 함께 지원받을 수 있는 사업이 있는지 문의드립니다.",
+        createdAt: new Date(now)
+      },
+      {
+        id: 2,
+        category: "데이터·클라우드 바우처",
+        title: "데이터 바우처 신청 기간이 언제인가요?",
+        author: "박서연",
+        body: "올해 데이터 구매 및 가공 바우처 신청 일정과 준비해야 할 서류가 궁금합니다.",
+        createdAt: new Date(now - 3 * 60 * 1000)
+      },
+      {
+        id: 3,
+        category: "스타트업 입주·창업",
+        title: "센텀 스타트업 입주 자격 문의",
+        author: "이도윤",
+        body: "초기 창업팀도 센텀 지역 입주 공간에 신청할 수 있는지, 평가 기준과 입주 기간을 알고 싶습니다.",
+        createdAt: new Date(now - 12 * 60 * 1000)
+      },
+      {
+        id: 4,
+        category: "게임·콘텐츠 제작 지원",
+        title: "Bu:Star 게임 제작비 신청 절차",
+        author: "최하린",
+        body: "모바일 게임 프로토타입을 개발 중입니다. Bu:Star 제작비 지원사업의 신청 절차와 발표 평가 방식이 궁금합니다.",
+        createdAt: new Date(now - 28 * 60 * 1000)
+      },
+      {
+        id: 5,
+        category: "교육·인재양성 신청",
+        title: "AI 활용 교육과정 일정 안내 부탁드립니다",
+        author: "정유진",
+        body: "재직자 대상 AI 활용 교육과정이 개설되는 일정과 온라인 수강 가능 여부를 안내받고 싶습니다.",
+        createdAt: new Date(now - 55 * 60 * 1000)
+      }
+    ];
+
+    const form = document.querySelector("#inquiryForm");
+    const categoryInput = document.querySelector("#category");
+    const authorInput = document.querySelector("#author");
+    const titleInput = document.querySelector("#title");
+    const bodyInput = document.querySelector("#body");
+    const cards = document.querySelector("#cards");
+    const countText = document.querySelector("#countText");
+    const statusMessage = document.querySelector("#statusMessage");
+    const importButton = document.querySelector("#importButton");
+    const exportButton = document.querySelector("#exportButton");
+    const excelInput = document.querySelector("#excelInput");
+
+    function sortInquiries() {
+      return [...inquiries].sort((a, b) => b.createdAt - a.createdAt);
+    }
+
+    function relativeTime(date) {
+      const diff = Date.now() - date.getTime();
+      const minutes = Math.floor(diff / 60000);
+      const hours = Math.floor(diff / 3600000);
+      const days = Math.floor(diff / 86400000);
+
+      if (minutes < 1) return "방금";
+      if (minutes < 60) return `${minutes}분 전`;
+      if (hours < 24) return `${hours}시간 전`;
+      return `${days}일 전`;
+    }
+
+    function pad(value) {
+      return String(value).padStart(2, "0");
+    }
+
+    function formatDate(date) {
+      return [
+        date.getFullYear(),
+        pad(date.getMonth() + 1),
+        pad(date.getDate())
+      ].join("-");
+    }
+
+    function formatDateTime(date) {
+      return `${formatDate(date)} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
+
+    function showStatus(message, type) {
+      statusMessage.textContent = message;
+      statusMessage.className = `status-message ${type}`;
+    }
+
+    function clearStatus() {
+      statusMessage.textContent = "";
+      statusMessage.className = "status-message";
+    }
+
+    function createTextElement(tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      element.textContent = text;
+      return element;
+    }
+
+    function render() {
+      const sorted = sortInquiries();
+      countText.textContent = `총 ${inquiries.length}건`;
+      cards.replaceChildren();
+
+      if (sorted.length === 0) {
+        cards.appendChild(createTextElement("div", "empty-state", "등록된 문의가 없습니다."));
+        return;
+      }
+
+      sorted.forEach((item) => {
+        const card = document.createElement("article");
+        card.className = "inquiry-card";
+
+        const head = document.createElement("div");
+        head.className = "card-head";
+
+        const info = document.createElement("div");
+        const meta = document.createElement("div");
+        meta.className = "card-meta";
+        meta.appendChild(createTextElement("span", "category-badge", item.category));
+        meta.appendChild(createTextElement("span", "time", relativeTime(item.createdAt)));
+
+        info.appendChild(meta);
+        info.appendChild(createTextElement("h3", "card-title", item.title));
+        info.appendChild(createTextElement("div", "author", `작성자 ${item.author}`));
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "danger-button";
+        deleteButton.textContent = "삭제";
+        deleteButton.addEventListener("click", () => {
+          inquiries = inquiries.filter((inquiry) => inquiry.id !== item.id);
+          render();
+        });
+
+        head.appendChild(info);
+        head.appendChild(deleteButton);
+        card.appendChild(head);
+        card.appendChild(createTextElement("p", "body-text", item.body));
+        cards.appendChild(card);
+      });
+    }
+
+    function hasExcelLibrary() {
+      return typeof window.XLSX !== "undefined";
+    }
+
+    function normalizeRowValue(row, keys) {
+      for (const key of keys) {
+        if (row[key] !== undefined && row[key] !== null) {
+          return String(row[key]).trim();
+        }
+      }
+      return "";
+    }
+
+    function parseExcelDate(value) {
+      if (!value) return new Date();
+      if (value instanceof Date && !Number.isNaN(value.getTime())) return value;
+      if (typeof value === "number" && window.XLSX && window.XLSX.SSF) {
+        const parsed = window.XLSX.SSF.parse_date_code(value);
+        if (parsed) return new Date(parsed.y, parsed.m - 1, parsed.d, parsed.H || 0, parsed.M || 0);
+      }
+
+      const normalized = String(value).trim().replace(/\./g, "-").replace(/\//g, "-");
+      const date = new Date(normalized.includes("T") ? normalized : normalized.replace(" ", "T"));
+      return Number.isNaN(date.getTime()) ? new Date() : date;
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const author = authorInput.value.trim();
+      const title = titleInput.value.trim();
+      const body = bodyInput.value.trim();
+
+      if (!author || !title || !body) {
+        form.reportValidity();
+        return;
+      }
+
+      inquiries.push({
+        id: nextId++,
+        category: categoryInput.value,
+        title,
+        author,
+        body,
+        createdAt: new Date()
+      });
+
+      form.reset();
+      categoryInput.value = CATEGORIES[0];
+      titleInput.focus();
+      clearStatus();
+      render();
+    });
+
+    exportButton.addEventListener("click", () => {
+      if (!hasExcelLibrary()) {
+        showStatus("엑셀 라이브러리를 불러오지 못했습니다. 네트워크 연결을 확인해 주세요.", "error");
+        return;
+      }
+
+      const rows = sortInquiries().map((item) => ({
+        ID: item.id,
+        "카테고리": item.category,
+        "제목": item.title,
+        "작성자": item.author,
+        "내용": item.body,
+        "등록일시": formatDateTime(item.createdAt)
+      }));
+      const sheet = XLSX.utils.json_to_sheet(rows, { header: ["ID", "카테고리", "제목", "작성자", "내용", "등록일시"] });
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, sheet, "문의목록");
+      XLSX.writeFile(workbook, `문의_목록_${formatDate(new Date())}.xlsx`);
+      showStatus(`문의 ${inquiries.length}건을 엑셀 파일로 내보냈습니다.`, "success");
+    });
+
+    importButton.addEventListener("click", () => {
+      excelInput.value = "";
+      excelInput.click();
+    });
+
+    excelInput.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (!hasExcelLibrary()) {
+        showStatus("엑셀 라이브러리를 불러오지 못했습니다. 네트워크 연결을 확인해 주세요.", "error");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (readerEvent) => {
+        try {
+          const data = new Uint8Array(readerEvent.target.result);
+          const workbook = XLSX.read(data, { type: "array", cellDates: true });
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(firstSheet, { defval: "" });
+          const imported = rows
+            .map((row) => {
+              const title = normalizeRowValue(row, ["제목", "title"]);
+              const author = normalizeRowValue(row, ["작성자", "author"]);
+              const body = normalizeRowValue(row, ["내용", "body"]);
+              if (!title || !author || !body) return null;
+
+              const category = normalizeRowValue(row, ["카테고리", "category"]) || "기타";
+              const rawCreatedAt = row["등록일시"] || row.createdAt;
+
+              return {
+                id: nextId++,
+                category,
+                title,
+                author,
+                body,
+                createdAt: parseExcelDate(rawCreatedAt)
+              };
+            })
+            .filter(Boolean);
+
+          if (imported.length === 0) {
+            showStatus("가져올 수 있는 문의가 없습니다. 제목, 작성자, 내용 열을 확인해 주세요.", "error");
+            return;
+          }
+
+          inquiries = inquiries.concat(imported);
+          render();
+          showStatus(`엑셀에서 문의 ${imported.length}건을 가져왔습니다.`, "success");
+        } catch (error) {
+          showStatus("엑셀 파일을 읽는 중 오류가 발생했습니다. 파일 형식을 확인해 주세요.", "error");
+        }
+      };
+      reader.onerror = () => {
+        showStatus("엑셀 파일을 읽는 중 오류가 발생했습니다. 파일 형식을 확인해 주세요.", "error");
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+    setInterval(render, 30000);
+    render();
+  </script>
+</body>
+</html>
