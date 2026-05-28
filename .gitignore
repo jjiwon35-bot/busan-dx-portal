@@ -1,0 +1,16 @@
+.DS_Store
+*.log
+*.tmp
+*.temp
+
+node_modules/
+dist/
+build/
+coverage/
+.cache/
+.parcel-cache/
+.vite/
+
+.env
+.env.*
+!.env.example
